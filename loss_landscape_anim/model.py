@@ -10,9 +10,10 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 from torch.optim import SGD, Adam, Adagrad, RMSprop
+import torchmetrics
 
 
-class GenericModel(pl.LightningModule):
+class GenericModel(pl.LightningDataModule):
     """GenericModel class that enables flattening of the model parameters."""
 
     def __init__(self, optimizer, learning_rate, custom_optimizer=None, gpus=0):
@@ -30,7 +31,8 @@ class GenericModel(pl.LightningModule):
         self.custom_optimizer = custom_optimizer
         self.gpus = gpus
         self.optim_path = []
-        self.accuracy = pl.metrics.Accuracy()
+        # self.accuracy = pl.metrics.Accuracy()
+        self.accuracy = torchmetrics.Accuracy("multiclass")
 
     def configure_optimizers(self):
         """Configure the optimizer for Pytorch Lightning.

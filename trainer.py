@@ -12,7 +12,7 @@ import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import resnet
-from model import LeNet
+# from 
 from datamodule import CIFAR10DataModule
 from loss_landscape_anim.main import loss_landscape_anim
 
@@ -21,17 +21,16 @@ model_names = sorted(name for name in resnet.__dict__
                      and name.startswith("resnet")
                      and callable(resnet.__dict__[name]))
 
-print(model_names)
+# print(model_names)
 
 parser = argparse.ArgumentParser(description='Propert ResNets for CIFAR10 in pytorch')
-# parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet32',
-#                     choices=model_names,
-#                     help='model architecture: ' + ' | '.join(model_names) +
-#                     ' (default: resnet32)')
-
+parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet32',
+                    choices=model_names,
+                    help='model architecture: ' + ' | '.join(model_names) +
+                    ' (default: resnet32)')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=10, type=int, metavar='N',
+parser.add_argument('--epochs', default=2, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
@@ -71,8 +70,8 @@ def main():
     if not os.path.exists(args.save_dir):
         os.makedirs(args.save_dir)
 
-    # model = torch.nn.DataParallel(resnet.__dict__[args.arch]()) # chel
-    model = LeNet(learning_rate=args.lr)
+    model = torch.nn.DataParallel(resnet.__dict__[args.arch]()) # chel
+    # model = LeNet(learning_rate=args.lr)
     model.cuda()
 
     # optionally resume from a checkpoint
@@ -125,6 +124,7 @@ def main():
     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer,
                                                         milestones=[100, 150], last_epoch=args.start_epoch - 1)
 
+    
     if args.arch in ['resnet1202', 'resnet110']:
         # for resnet1202 original paper uses lr=0.01 for first 400 minibatches for warm-up
         # then switch back. In this setup it will correspond for first epoch.
@@ -219,12 +219,13 @@ def train(train_loader, model, criterion, optimizer, epoch):
         batch_time.update(time.time() - end)
         end = time.time()
 
-    print('Epoch: [{0}]\t'
+    print('Epoch: [{0}]\n'
+            'Train: \t'
             'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
             'Data {data_time.val:.3f} ({data_time.avg:.3f})\t'
-            'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-            'Acc {top1.val:.3f} ({top1.avg:.3f})'.format(
-                epoch, batch_time=batch_time,
+            'Loss {loss.avg:.4f}\t'
+            'Acc {top1.avg:.3f}'.format(
+                epoch+1, batch_time=batch_time,
                 data_time=data_time, loss=losses, top1=top1))
 
 
@@ -266,11 +267,11 @@ def validate(val_loader, model, criterion):
             end = time.time()
 
 
-    print('Test: [{0}/{1}]\t'
+    print('Test: \t'
         'Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
-        'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
-        'Acc {top1.val:.3f} ({top1.avg:.3f})'.format(
-        i, len(val_loader), batch_time=batch_time, loss=losses,
+        'Loss {loss.avg:.4f}\t'
+        'Acc {top1.avg:.3f}'.format(
+        batch_time=batch_time, loss=losses,
         top1=top1))
 
     # print(' * Prec@1 {top1.avg:.3f}'

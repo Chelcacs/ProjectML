@@ -11,7 +11,7 @@ import pytorch_lightning as pl
 import torch
 from torch.utils.data import DataLoader, Subset, TensorDataset
 from torchvision import transforms
-from torchvision.datasets import MNIST
+from torchvision.datasets import CIFAR10
 
 
 class SpiralsDataModule(pl.LightningDataModule):
@@ -51,7 +51,7 @@ class SpiralsDataModule(pl.LightningDataModule):
 class CIFAR10DataModule(pl.LightningDataModule):
     """Datamodule for the MNIST dataset."""
 
-    def __init__(self, batch_size, n_examples=3000):
+    def __init__(self, batch_size, n_examples=10000):
         """Init a MNIST datamodule.
 
         Args:
@@ -62,7 +62,7 @@ class CIFAR10DataModule(pl.LightningDataModule):
         super().__init__()
         self.batch_size = batch_size if batch_size else 1
         self.num_classes = 10
-        self.input_dim = (1, 28, 28)
+        self.input_dim = (3, 32, 32)
         transform = transforms.Compose(
             [
                 transforms.Resize(32),
@@ -70,13 +70,13 @@ class CIFAR10DataModule(pl.LightningDataModule):
                 transforms.Normalize((0.1307,), (0.3081,)),
             ]
         )
-        self.mnist_train = CIFAR10(
+        self.cifar_train = CIFAR10(
             os.getcwd(), train=True, download=True, transform=transform
         )
-        # Note: do not use mnist_train.data, it's the original data
+        # Note: do not use cifar_train.data, it's the original data
         # *before* transformations! The transformations are applied in __getitem__
-        randrow = torch.randperm(len(self.mnist_train))[:n_examples]
-        subset = Subset(self.mnist_train, randrow)
+        randrow = torch.randperm(len(self.cifar_train))[:n_examples]
+        subset = Subset(self.cifar_train, randrow)
         assert len(subset) == n_examples
         self.X, self.y = self._extract_features_targets(subset)
         self.dataset = TensorDataset(self.X, self.y)

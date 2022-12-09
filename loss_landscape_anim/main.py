@@ -17,6 +17,7 @@ import pytorch_lightning as pl
 import torch
 
 from loss_landscape_anim.datamodule import (
+    MNISTDataModule,
     SpiralsDataModule,
 )
 from loss_landscape_anim.loss_landscape import LossGrid, DimReduction
@@ -77,9 +78,9 @@ def loss_landscape_anim(
     if seed:
         torch.manual_seed(seed)
 
-    if not datamodule:
-        print("Data module not provided, using sample data: spirals dataset")
-        datamodule = SpiralsDataModule()
+    # if not datamodule:
+    #     print("Data module not provided, using sample data: spirals dataset")
+    #     datamodule = SpiralsDataModule()
 
     if not model and not load_model:
         print(
