@@ -13,8 +13,8 @@ import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import resnet
 # from 
-from datamodule import CIFAR10DataModule
-from loss_landscape_anim.main import loss_landscape_anim
+# from datamodule import CIFAR10DataModule
+# from loss_landscape_anim.main import loss_landscape_anim
 
 model_names = sorted(name for name in resnet.__dict__
     if name.islower() and not name.startswith("__")
@@ -30,7 +30,7 @@ parser.add_argument('--arch', '-a', metavar='ARCH', default='resnet32',
                     ' (default: resnet32)')
 parser.add_argument('-j', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('--epochs', default=2, type=int, metavar='N',
+parser.add_argument('--epochs', default=10, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('--start-epoch', default=0, type=int, metavar='N',
                     help='manual epoch number (useful on restarts)')
@@ -162,17 +162,17 @@ def main():
             'best_prec1': best_prec1,
         }, is_best, filename=os.path.join(args.save_dir, 'model.th'))
     
-    # draw anime by chel
-    datamodule = CIFAR10DataModule(batch_size=args.batch_size)
+    # # draw anime by chel
+    # datamodule = CIFAR10DataModule(batch_size=args.batch_size)
 
-    loss_landscape_anim(
-        n_epochs=args.epochs,
-        model=model,
-        datamodule=datamodule,
-        optimizer="sgd",
-        load_model=False,
-        output_to_file=True
-    )
+    # loss_landscape_anim(
+    #     n_epochs=args.epochs,
+    #     model=model,
+    #     datamodule=datamodule,
+    #     optimizer="sgd",
+    #     load_model=False,
+    #     output_to_file=True
+    # )
 
 
 def train(train_loader, model, criterion, optimizer, epoch):
